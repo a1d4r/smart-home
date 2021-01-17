@@ -12,6 +12,10 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 
 from pathlib import Path
 import os
+from dotenv import load_dotenv
+
+# Load environmental variables from .env file
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -121,5 +125,6 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-# Access token for smart home
+# Smart Home Controller API
 SMART_HOME_ACCESS_TOKEN = os.getenv('SMART_HOME_ACCESS_TOKEN')
+SMART_HOME_API_URL = 'https://smarthome.webpython.graders.eldf.ru/api/user.controller'
