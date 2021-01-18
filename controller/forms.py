@@ -1,17 +1,25 @@
 from django import forms
 from crispy_forms import helper, layout
 
+from .models import Setting
+
 
 class ControllerForm(forms.Form):
     bedroom_target_temperature = forms.IntegerField(
-        min_value=16, max_value=50, label='Bedroom target temperature', initial=21)
+        min_value=16, max_value=50, label='Bedroom target temperature', required=True)
     hot_water_target_temperature = forms.IntegerField(
-        min_value=24, max_value=80, label='Hot water target temperature', initial=80)
-    bedroom_light = forms.BooleanField(label='Bedroom light')
-    bathroom_light = forms.BooleanField(label='Bathroom light')
+        min_value=24, max_value=80, label='Hot water target temperature', required=True)
+    bedroom_light = forms.BooleanField(label='Bedroom light', required=False)
+    bathroom_light = forms.BooleanField(label='Bathroom light', required=False)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = helper.FormHelper()
         self.helper.form_method = 'post'
         self.helper.add_input(layout.Submit('submit', 'Save'))
+
+    def save(self):
+        for controller_name, value in self.cleaned_data.items():
+            setting = Setting.objects.get(controller_name=controller_name)
+            setting.value = value
+            setting.save()

@@ -1,0 +1,38 @@
+[
+  {
+    "model": "controller.setting",
+    "pk": 1,
+    "fields": {
+      "controller_name": "bedroom_target_temperature",
+      "label": "Bedroom target temperature",
+      "value": 21
+    }
+  },
+  {
+    "model": "controller.setting",
+    "pk": 2,
+    "fields": {
+      "controller_name": "hot_water_target_temperature",
+      "label": "Hot water target temperature",
+      "value": 80
+    }
+  },
+  {
+    "model": "controller.setting",
+    "pk": 3,
+    "fields": {
+      "controller_name": "bedroom_light",
+      "label": "Bedroom light",
+      "value": 0
+    }
+  },
+  {
+    "model": "controller.setting",
+    "pk": 4,
+    "fields": {
+      "controller_name": "bathroom_light",
+      "label": "Bathroom light",
+      "value": 0
+    }
+  }
+]
