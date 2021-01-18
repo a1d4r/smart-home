@@ -42,6 +42,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'controller',
+    'crispy_forms',
 ]
 
 MIDDLEWARE = [
@@ -128,3 +130,6 @@ STATIC_URL = '/static/'
 # Smart Home Controller API
 SMART_HOME_ACCESS_TOKEN = os.getenv('SMART_HOME_ACCESS_TOKEN')
 SMART_HOME_API_URL = 'https://smarthome.webpython.graders.eldf.ru/api/user.controller'
+
+# Crispy Forms
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
