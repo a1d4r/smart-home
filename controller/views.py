@@ -1,4 +1,3 @@
-from django.http import HttpResponse
 from django.shortcuts import render
 
 from .services import get_controllers_state
@@ -19,5 +18,5 @@ def controller(request):
         form_data = {setting.controller_name: setting.value for setting in settings}
         form = ControllerForm(form_data)
     data = get_controllers_state()
-    return render(request, 'controller/control.html',
-                  context={'data': data, 'form': form})
+    context = {'data': get_controllers_state(), 'form': form}
+    return render(request, 'controller/control.html', context=context)
