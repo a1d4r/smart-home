@@ -8,7 +8,7 @@ class SmartHomeControllerError(Exception):
     pass
 
 
-def get_controllers_state():
+def get_controllers_states():
     try:
         r = requests.get(
             SMART_HOME_API_URL,
@@ -25,3 +25,7 @@ def get_controllers_state():
         raise SmartHomeControllerError(repr(e))
     else:
         return states
+
+
+def save_controller_state(states):
+    print('Save:', states)

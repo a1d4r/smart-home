@@ -1,4 +1,4 @@
-from .services import get_controllers_state
+from .services import get_controllers_states, save_controller_state
 
 
 from .models import Setting
@@ -7,20 +7,25 @@ from .models import Setting
 class ControllerStates:
     """Class representing Smart Home controllers states."""
     def __init__(self):
-        self.states = get_controllers_state()
+        self.states = get_controllers_states()
+
+    def save(self):
+        save_controller_state(self.states)
 
     def __getattr__(self, item):
-        return self.states[item]
+        return self.__dict__['states'][item]
 
     def __setattr__(self, key, value):
         """Set attr with constraints."""
+        if key == 'states':
+            return super().__setattr__(key, value)
         if not (
             # Do not open water if leak was detected
             key == 'cold_water' and value == True and self.leak_detector == True
             or key == 'hot_water' and value == True and self.leak_detector == True
             # Do not turn on boiler and washing machine if there is no cold water
             or key == 'boiler' and value == True and self.cold_water == False
-            or key == 'washing_machine' and value == True and self.cold_water == False
+            or key == 'washing_machine' and value == 'on' and self.cold_water == False
             # Do not control curtains if there are on manual control
             or key == 'curtains' and self.curtains == 'slightly_open'
             # Do not turn on devices if smoke was detected
@@ -28,9 +33,9 @@ class ControllerStates:
             or key == 'bedroom_light' and value == True and self.smoke_detector == True
             or key == 'bathroom_light' and value == True and self.smoke_detector == True
             or key == 'boiler' and value == True and self.smoke_detector == True
-            or key == 'washing_machine' and value == True and self.smoke_detector == True
+            or key == 'washing_machine' and value == 'on' and self.smoke_detector == True
         ):
-            self.states['key'] = value
+            self.states[key] = value
 
 
 class SmartHomeSettings:
@@ -52,6 +57,20 @@ class SmartHomeManager:
         """Update controllers state and user settings."""
         self.__init__()
 
+    def save_states(self):
+        """Save controller states to react to events."""
+        self.states.save()
+
+    def check_events(self):
+        """Check all controller states and react to events."""
+        self.sync_lights()
+        self.check_water_leak()
+        self.check_cold_water_closed()
+        self.control_boiler()
+        self.control_curtains()
+        self.check_smoke()
+        self.control_conditioner()
+
     def sync_lights(self):
         """Sync room lights with the ones set by an user."""
         self.states.bedroom_light = self.settings.bedroom_light
@@ -68,7 +87,7 @@ class SmartHomeManager:
         """If the cold water is closed, turn off the boiler and washing machine."""
         if not self.states.cold_water:
             self.states.boiler = False
-            self.states.washing_machine = False
+            self.states.washing_machine = 'off'
 
     def control_boiler(self):
         """Turn on/off boiler depending on the hot water temperature"""
@@ -91,7 +110,7 @@ class SmartHomeManager:
             self.states.bedroom_light = False
             self.states.bathroom_light = False
             self.states.boiler = False
-            self.states.washing_machine = False
+            self.states.washing_machine = 'off'
 
     def control_conditioner(self):
         """Turn on/off air conditioner depending on the bedroom temperature"""

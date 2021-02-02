@@ -2,6 +2,7 @@ from django import forms
 from crispy_forms import helper, layout
 
 from .models import Setting
+from .tasks import SmartHomeManager
 
 
 class ControllerForm(forms.Form):
@@ -23,3 +24,7 @@ class ControllerForm(forms.Form):
             setting = Setting.objects.get(controller_name=controller_name)
             setting.value = value
             setting.save()
+        manager = SmartHomeManager()
+        manager.check_events()
+        manager.save_states()
+
