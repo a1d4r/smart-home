@@ -1,16 +1,38 @@
 from .services import get_controllers_states, save_controller_state
-
+from enum import Flag, auto
 
 from .models import Setting
 
 
+class SmartHomeSettings:
+    """Class representing Smart Home user settings."""
+    def __init__(self):
+        self.settings = {setting.controller_name: setting.value for setting in Setting.objects.all()}
+        for setting in self.settings:
+            if setting.endswith('light'):
+                self.settings[setting] = bool(self.settings[setting])
+        print('Settings:', self.settings)
+
+    def __getattr__(self, item):
+        return self.settings[item]
+
+
 class ControllerStates:
     """Class representing Smart Home controllers states."""
+    READ_ONLY = {
+        'leak_detector', 'outdoor_light', 'smoke_detector',
+        'bedroom_temperature', 'boiler_temperature',
+    }
+
     def __init__(self):
         self.states = get_controllers_states()
 
     def save(self):
-        save_controller_state(self.states)
+        print(self.states)
+        states_to_save = {state: value
+                          for state, value in self.states.items()
+                          if state not in self.READ_ONLY}
+        save_controller_state(states_to_save)
 
     def __getattr__(self, item):
         return self.__dict__['states'][item]
@@ -38,20 +60,14 @@ class ControllerStates:
             self.states[key] = value
 
 
-class SmartHomeSettings:
-    """Class representing Smart Home user settings."""
-    def __init__(self):
-        self.settings = {setting.controller_name: setting.value for setting in Setting.objects.all()}
-
-    def __getattr__(self, item):
-        return self.settings[item]
-
-
 class SmartHomeManager:
     """Manager for Smart Home reacting to events."""
     def __init__(self):
         self.states = ControllerStates()
         self.settings = SmartHomeSettings()
+        # for some reasons boiler temperature might not be returned by API
+        if not self.states.boiler_temperature:
+            self.states.boiler_temperature = self.settings.hot_water_target_temperature
 
     def update_states(self):
         """Update controllers state and user settings."""

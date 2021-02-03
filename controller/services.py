@@ -28,4 +28,18 @@ def get_controllers_states():
 
 
 def save_controller_state(states):
-    print('Save:', states)
+    try:
+        data = {
+            'controllers': [{'name': name, 'value': value}
+                            for name, value in states.items()]
+        }
+        print('Save:', data)
+        r = requests.post(
+            SMART_HOME_API_URL,
+            json=data,
+            headers={'Authorization': f'Bearer {SMART_HOME_ACCESS_TOKEN}'},
+            timeout=10
+        )
+        print(r.json())
+    except requests.RequestException as e:
+        raise SmartHomeControllerError(repr(e))
