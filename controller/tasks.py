@@ -1,7 +1,10 @@
-from .services import get_controllers_states, save_controller_state
+import logging
 from enum import Flag, auto
 
+from .services import get_controllers_states, save_controller_state
 from .models import Setting
+
+logger = logging.getLogger(__name__)
 
 
 class SmartHomeSettings:
@@ -11,7 +14,7 @@ class SmartHomeSettings:
         for setting in self.settings:
             if setting.endswith('light'):
                 self.settings[setting] = bool(self.settings[setting])
-        print('Settings:', self.settings)
+        logger.debug(f'Settings: {self.settings}')
 
     def __getattr__(self, item):
         return self.settings[item]
@@ -28,7 +31,7 @@ class ControllerStates:
         self.states = get_controllers_states()
 
     def save(self):
-        print(self.states)
+        logger.debug(f'States: {self.states}')
         states_to_save = {state: value
                           for state, value in self.states.items()
                           if state not in self.READ_ONLY}

@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 
 from pathlib import Path
 import os
+import sys
 from dotenv import load_dotenv
 
 # Load environmental variables from .env file
@@ -133,3 +134,23 @@ SMART_HOME_API_URL = 'https://smarthome.webpython.graders.eldf.ru/api/user.contr
 
 # Crispy Forms
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
+
+# Logging configuration
+LOGGING = {
+   'version': 1,
+   'disable_existing_loggers': False,
+   'handlers': {
+       'console': {
+           'level': 'DEBUG',
+           'class': 'logging.StreamHandler',
+           'stream': sys.stdout,
+       },
+   },
+   'loggers': {
+       '': {
+           'handlers': ['console'],
+           'level': 'DEBUG',
+           'propagate': True,
+       },
+   },
+}

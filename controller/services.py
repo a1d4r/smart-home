@@ -1,7 +1,10 @@
+import logging
 import requests
 from json.decoder import JSONDecodeError
 
 from smart_home.settings import SMART_HOME_ACCESS_TOKEN, SMART_HOME_API_URL
+
+logger = logging.getLogger(__name__)
 
 
 class SmartHomeControllerError(Exception):
@@ -33,13 +36,12 @@ def save_controller_state(states):
             'controllers': [{'name': name, 'value': value}
                             for name, value in states.items()]
         }
-        print('Save:', data)
+        logger.debug(f'Save: {data}')
         r = requests.post(
             SMART_HOME_API_URL,
             json=data,
             headers={'Authorization': f'Bearer {SMART_HOME_ACCESS_TOKEN}'},
             timeout=10
         )
-        print(r.json())
     except requests.RequestException as e:
         raise SmartHomeControllerError(repr(e))
